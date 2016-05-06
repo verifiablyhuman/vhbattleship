@@ -1,7 +1,7 @@
 """This module contains the classes for the battleship game."""
 
 from random import choice
-from game_methods import get_spots
+from game_methods import get_spots, invert
 
 
 class Board:
@@ -10,25 +10,22 @@ class Board:
 
     def __init__(self, hdim, vdim):
         """This function creates a basic initial board."""
-        self.init_row = []
-        self._num_row = []
-        for i in range(hdim):
-            self.init_row.append('O')
-            self._num_row.append(str(i))
-
-        self.board = []
-        for j in range(vdim):
-            self.board.append(self.init_row)
+        self._board = []
+        self._num_row = [str(x) for x in xrange(hdim)]
+        for a in xrange(vdim):
+            self._board.append([])
+            for b in xrange(hdim):
+                self._board[a].append('O')
 
     def print_board(self):
         """This function prints the board in its current state."""
         print '  ' + ' '.join(self._num_row)
-        for c, row in zip(Board.alpha, self.board):
+        for c, row in zip(Board.alpha, self._board):
             print c, ' '.join(row)
 
     def get_board(self):
         """This function returns the actual board of the board object."""
-        return self.board
+        return self._board
 
     def place_ship(self, pos):
         """This function takes a position tuple of a ship and puts it on the board."""
@@ -36,13 +33,23 @@ class Board:
 
         if orientation == 0:
             for a in xrange(size):
-                self.board[row][col + a] = 'S'
+                self._board[row][col + a] = 'S'
         else:
             for b in xrange(size):
-                self.board[row + b][col] = 'S'
+                self._board[row + b][col] = 'S'
 
     def add_guess(self, guess):
-        pass
+        row, col = guess
+        try:
+            if self._board[row][col] != 'O':
+                print "You already guessed that. Try again."
+                return False
+            else:
+                self._board[row][col] = 'G'
+                return True
+        except IndexError:
+            print "That's not on the board. Try again."
+            return False
 
 
 class Ship:
@@ -71,8 +78,7 @@ class Ship:
                     self._choices.append((a, b, 0, size))
 
         # Loop through the columns to see what possible positions they hold.
-        self._inv_board = zip(self._board)
-        for a, col in enumerate(self._inv_board):
+        for a, col in enumerate(invert(self._board)):
             self._col_spots = get_spots(col, size)
             for b, row in enumerate(self._col_spots):
                 if all(row):

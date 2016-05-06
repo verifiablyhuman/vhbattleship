@@ -21,8 +21,8 @@ print "Now let's determine how many ships there will be."
 len_ships = get_lim_input('\tHow long do you want the ships to be (must fit on board)?',
                           1, min_dim)
 max_ships = (board_area/2.0) / len_ships
-num_ships = get_lim_input('\tHow many ships do you want (1-5 ships, covering less than \
-                          half of the board)?', 1, min(5, max_ships))
+num_ships = get_lim_input('\tHow many ships do you want (1-5 ships, covering less than half of the board)?',
+                          1, min(5, max_ships))
 print 'Your board will have {} ships that are {} tiles long.'.format(num_ships, len_ships)
 print "Finally, we'll determine how many turns you get."
 
@@ -47,23 +47,28 @@ ships = []
 for a in xrange(num_ships):
     ships.append(Ship(ship_board.get_board(), len_ships))
     ship_pos = ships[a].get_pos()
-    print ship_pos
     ship_board.place_ship(ship_pos)
-    ship_board.print_board()
 
-"""# Now we go into the main loop for guessing.
+# Now we go into the main loop for guessing.
 for b in xrange(turns):
-    if player_wins(player_board, ship_board):
+    if player_wins(player_board.get_board(), ship_board.get_board()):
         print 'Congratulations, you win!'
+        player_board.print_board()
+        ship_board.print_board()
         break
     else:
-        guess = get_guess()
-        player_board.add_guess(guess)
-        check_hit(player_board, ship_board)
-        ship_board.add_guess(guess)
+        good_guess = False
+        while not good_guess:
+            print "You're on turn {}.".format(b + 1)
+            player_board.print_board()
+            guess = get_guess()
+            good_guess = player_board.add_guess(guess)
+        check_hit(guess, player_board.get_board(), ship_board.get_board())
 else:
-    if player_wins(player_board, ship_board):
+    if player_wins(player_board.get_board(), ship_board.get_board()):
         print 'Congratulations, you win!'
+        player_board.print_board()
+        ship_board.print_board()
     else:
-        print "Sorry, you're out of turns.\nGAME OVER"""
+        print "Sorry, you're out of turns.\nGAME OVER"
     
